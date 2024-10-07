@@ -22,7 +22,7 @@ export const styles = StyleSheet.create({
         textAlign:"center",
         fontSize:15,
         fontWeight:"bold",
-        color:"#705aa9"
+        color:"#1E90FF"
     },
     rootActivity:{
         flex:1,
@@ -59,6 +59,7 @@ export const styles = StyleSheet.create({
     },
     fabProduct:{
         position:"absolute",
+        backgroundColor:"#1E90FF",
         bottom:20,
         right:15
     },
