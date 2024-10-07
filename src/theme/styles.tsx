@@ -65,5 +65,15 @@ export const styles = StyleSheet.create({
     rootInputsProduct:{
         flexDirection:"row",
         gap:35
+    },
+    rootDetail:{
+        flex:1,
+        padding:20,
+        backgroundColor:"#fff",
+        gap:20
+    },
+    iconSingOut:{
+        alignItems:"center",
+        marginTop:20
     }
 })

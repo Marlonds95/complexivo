@@ -9,19 +9,21 @@ import { auth } from "../config/firebaseConfig";
 import { View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { styles } from "../theme/styles";
+import { DetailProductScreen } from "../screens/HomeScreen/DetailProductScreen";
 const Stack= createStackNavigator();
 interface Routes{
     name:string,
     screen: ()=> JSX.Element;
+    headerShow?: boolean;
+    title?:string
+    
 }
 
-const routesNoAuth:Routes[]=[
+const routes:Routes[]=[
     {name:"Login", screen:LoginScreen},
     {name:"Register", screen:RegisterScreen},
-]
-
-const routesAuth:Routes[]=[
     {name:"Home", screen:HomeScreen},
+    {name:"Detail", screen: DetailProductScreen, headerShow:true, title:"Detalle del Videjuego"}
     
 ]
 
@@ -50,20 +52,12 @@ export const StackNavigator=()=>{
         <ActivityIndicator animating={true} size={35} />
         </View>
         ):(
-        <Stack.Navigator>
-            {
-                !isAuth?
-                routesNoAuth.map((item, index)=>(
+        <Stack.Navigator initialRouteName={isAuth? "Home": "Login"}>
+            { 
+            routes.map((item, index)=>(
                 <Stack.Screen key={index}
                     name ={item.name}
-                     options={{headerShown:false}}
-                     component={item.screen}/>
-                ))
-            :
-            routesAuth.map((item, index)=>(
-                <Stack.Screen key={index}
-                    name ={item.name}
-                     options={{headerShown:false}}
+                     options={{headerShown:item.headerShow ?? false, title:item.title}}
                      component={item.screen}/>
             ))
         }

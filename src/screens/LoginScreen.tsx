@@ -29,7 +29,7 @@ export const LoginScreen = () => {
     const [hiddenPassword, setHiddenPassword] = useState<boolean>(true);
     
     const navigation= useNavigation();
-    
+
     const handleSignIn=async()=>{
         if (!formLogin.email || !formLogin.password){
             setShowMessage({
@@ -40,7 +40,11 @@ export const LoginScreen = () => {
             return;
         }
         try {
-            const response= await signInWithEmailAndPassword(auth, formLogin.email, formLogin.password);
+            const response= await signInWithEmailAndPassword(
+                auth,
+                formLogin.email,
+                formLogin.password);
+                navigation.dispatch(CommonActions.navigate({name:"Home"}))
         
         } catch (e) {
             console.log(e);

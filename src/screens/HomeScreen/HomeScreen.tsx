@@ -2,26 +2,29 @@ import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { Avatar, Text, IconButton, Portal, Modal, Divider, TextInput, Button, FAB } from 'react-native-paper';
 import { styles } from '../../theme/styles';
-import { auth } from '../../config/firebaseConfig';
+import { auth, dbRealTime } from '../../config/firebaseConfig';
 import firebase, { updateProfile } from "@firebase/auth"
 import { FlatList } from 'react-native-gesture-handler';
 import { ProductCardComponent } from './components/ProductCardComponent';
 import { NewProductComponent } from './components/NewProductComponent';
+import { onValue, ref } from 'firebase/database';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 interface FormUser{
   name: string,
 }
 
-interface Product{
+export interface Product{
   id: string,
-  nombre: String,        
-  plataforma: String,   
-  precio: Number,        
-  stock: Number,         
-  genero: String,        
-  fechaLanzamiento: Date
+  name: string;
+    plataform: string;
+    price: number;
+    stock:number;
+    genre:string;
+    releaseDate:string
 }
 export const HomeScreen = () => {
+const navigation = useNavigation();
 
   const [formUser, setFormUser] = useState<FormUser>({
     name: ''
@@ -39,7 +42,8 @@ const [showModalProduct, setShowModalProduct] = useState <boolean>(false);
 
 useEffect(()=>{
   setuserData(auth.currentUser);
-  setFormUser({name:auth.currentUser?.displayName ?? ""})
+  setFormUser({name:auth.currentUser?.displayName ?? ""});
+  getAllProducts();
 }
 ,[]);
 
@@ -61,6 +65,35 @@ const handleUpdateUser=async()=>{
   setshowModalProfile(false);
 }
 
+const getAllProducts=()=>{
+  
+  const dbRef=ref(dbRealTime, "products/" + auth.currentUser?.uid );
+  
+  onValue(dbRef, (snapshot)=>{
+    const data =snapshot.val();
+    if(!data)return;
+    const getKeys= Object.keys(data);
+    const listPorduct:Product[]=[];
+
+    getKeys.forEach((key)=>{
+      const value={...data[key], id:key}
+      listPorduct.push(value);
+    });
+    setproducts(listPorduct);
+  })
+}
+const handleSignOut =async()=>{
+  try{
+  await auth.signOut();
+  navigation.dispatch(CommonActions.reset(
+    {
+      index:0, 
+      routes:[{name: "Login"}]
+    }))}catch(e){
+      console.log(e);
+    }
+}
+
   return (
     <>
     <View style={styles.rootHome}>
@@ -79,15 +112,15 @@ const handleUpdateUser=async()=>{
         />
       </View>
       </View>
-
-    </View>
-    <View>
+      <View>
       <FlatList
       data={products}
-      renderItem={({item})=><ProductCardComponent/>}
+      renderItem={({item})=><ProductCardComponent product={item}/>}
       keyExtractor={item=>item.id}
       />
     </View>
+    </View>
+    
     <Portal>
       <Modal visible={showModalProfile}  contentContainerStyle={styles.modal}>
           <View style={styles.header}>
@@ -118,6 +151,14 @@ const handleUpdateUser=async()=>{
           <Button mode="contained" onPress={handleUpdateUser}>
             Actualizar
           </Button>
+          <View style={styles.iconSingOut}>
+          <IconButton
+          icon="logout-variant"
+          size={35}
+          mode='contained'
+          onPress={handleSignOut}
+          />
+          </View>
       </Modal>
     </Portal>
     <FAB 

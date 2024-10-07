@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import { Button, Divider, IconButton, Modal, Portal, Snackbar, Text, TextInput } from 'react-native-paper'
 import { styles } from '../../../theme/styles';
-import { dbRealTime } from '../../../config/firebaseConfig';
+import { auth, dbRealTime } from '../../../config/firebaseConfig';
 import { push, ref, set } from 'firebase/database';
 
 
@@ -52,7 +52,7 @@ export const NewProductComponent = ({showModalProduct, setShowModalProduct}:Prop
     }
 
 
-    const dbRef=ref(dbRealTime, "products");
+    const dbRef=ref(dbRealTime, "products/" + auth.currentUser?.uid);
     const saveProduct =push(dbRef);
 
     try{
@@ -77,7 +77,7 @@ export const NewProductComponent = ({showModalProduct, setShowModalProduct}:Prop
     <Portal>
       <Modal visible={showModalProduct}  contentContainerStyle={styles.modal}>
           <View style={styles.header}>
-          <Text variant='headlineSmall'>Nuevo VideoJuego</Text>
+          <Text variant='headlineSmall'>Nuevo Video Juego</Text>
           <View style={styles.icon}>
           <IconButton
           icon="close-circle-outline"
