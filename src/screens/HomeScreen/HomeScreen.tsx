@@ -74,7 +74,6 @@ const getAllProducts=()=>{
     if(!data)return;
     const getKeys= Object.keys(data);
     const listPorduct:Product[]=[];
-
     getKeys.forEach((key)=>{
       const value={...data[key], id:key}
       listPorduct.push(value);
